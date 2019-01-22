@@ -232,6 +232,7 @@ class ServerlessS3Local {
   }
 
   createBuckets() {
+    console.log('createBuckets()');
     const buckets = this.buckets();
     if (!buckets.length) {
       console.log('WARN: No buckets found to create');
@@ -384,6 +385,7 @@ class ServerlessS3Local {
    * @return {object} Array of bucket name
    */
   buckets() {
+    console.log('buckets()');
     const resources = (this.service.resources && this.service.resources.Resources) || {};
     if (this.hasAdditionalStacksPlugin()) {
       let additionalStacks = [];
@@ -402,6 +404,7 @@ class ServerlessS3Local {
     // support for serverless-plugin-existing-s3
     // https://www.npmjs.com/package/serverless-plugin-existing-s3
     if (this.hasExistingS3Plugin()) {
+      console.log('has existing plugin');
       const functions = this.serverless.service.functions;
       const functionNames = Object.keys(functions);
       functionNames.forEach((name) => {
@@ -422,8 +425,15 @@ class ServerlessS3Local {
         });
       });
     }
+    const functions = this.service.functions;
+    if(!functions) {
+      console.log('Functions empty!');
+    } else {
+      console.log('Functions not empty: ');
+      console.log(Object.keys(functions));
+    }
 
-    const event_source_buckets = Object.keys(this.service.functions).flatMap(key => {
+    const event_source_buckets = functions ? functions.flatMap(key => {
       const serviceFunction = this.service.getFunction(key);
       return serviceFunction.events.map(event => {
         const s3 = (event && (event.s3 || event.existingS3)) || undefined;
@@ -432,7 +442,7 @@ class ServerlessS3Local {
         }
         return (typeof s3 === 'object') ? s3.bucket : s3;
       })
-    });
+    }) : [];
 
     return Object.keys(resources)
       .map((key) => {
