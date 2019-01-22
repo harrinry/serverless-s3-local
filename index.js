@@ -431,7 +431,8 @@ class ServerlessS3Local {
     } else {
       console.log('Functions not empty: ');
       console.log(Object.keys(functions));
-    }
+    }const concat = (x,y) =>
+          x.concat(y)
       const flatMap = (f,xs) =>
           xs.map(f).reduce(concat, [])
     const event_source_buckets = functions ? flatMap(key => {
