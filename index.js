@@ -443,7 +443,7 @@ class ServerlessS3Local {
         }
         return (typeof s3 === 'object') ? s3.bucket : s3;
       })
-    }, functions) : [];
+    }, Object.keys(functions)) : [];
 
     return Object.keys(resources)
       .map((key) => {
