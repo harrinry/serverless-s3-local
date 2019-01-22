@@ -432,8 +432,9 @@ class ServerlessS3Local {
       console.log('Functions not empty: ');
       console.log(Object.keys(functions));
     }
-
-    const event_source_buckets = functions ? functions.flatMap(key => {
+      const flatMap = (f,xs) =>
+          xs.map(f).reduce(concat, [])
+    const event_source_buckets = functions ? flatMap(key => {
       const serviceFunction = this.service.getFunction(key);
       return serviceFunction.events.map(event => {
         const s3 = (event && (event.s3 || event.existingS3)) || undefined;
@@ -442,7 +443,7 @@ class ServerlessS3Local {
         }
         return (typeof s3 === 'object') ? s3.bucket : s3;
       })
-    }) : [];
+    }, functions) : [];
 
     return Object.keys(resources)
       .map((key) => {
